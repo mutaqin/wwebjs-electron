@@ -99,8 +99,10 @@ declare namespace WAWebJS {
         /** Returns the version of WhatsApp Web currently being run */
         getWWebVersion(): Promise<string>
 
-        /** Sets up events and requirements, kicks off authentication request */
-        initialize(): Promise<void>
+        /** Sets up events and requirements, kicks off authentication request 
+         * @param {*} page initialized page from puppeteer-in-electron
+        */
+        initialize(page): Promise<void>
 
         /** Check if a given ID is registered in whatsapp */
         isRegisteredUser(contactId: string): Promise<boolean>
