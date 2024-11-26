@@ -1,7 +1,7 @@
 'use strict';
 
 const EventEmitter = require('events');
-const puppeteer = require('puppeteer');
+// const puppeteer = require('puppeteer');
 const moduleRaid = require('@pedroslopez/moduleraid/moduleraid');
 
 const Util = require('./util/Util');
@@ -259,39 +259,40 @@ class Client extends EventEmitter {
 
     /**
      * Sets up events and requirements, kicks off authentication request
+     * @param {*} page initialized page from puppeteer-in-electron
      */
-    async initialize() {
+    async initialize(page) {
 
-        let 
-            /**
-             * @type {puppeteer.Browser}
-             */
-            browser, 
-            /**
-             * @type {puppeteer.Page}
-             */
-            page;
+        // let 
+        //     /**
+        //      * @type {puppeteer.Browser}
+        //      */
+        //     browser, 
+        //     /**
+        //      * @type {puppeteer.Page}
+        //      */
+        //     page;
 
-        browser = null;
-        page = null;
+        // browser = null;
+        // page = null;
 
         await this.authStrategy.beforeBrowserInitialized();
 
-        const puppeteerOpts = this.options.puppeteer;
-        if (puppeteerOpts && puppeteerOpts.browserWSEndpoint) {
-            browser = await puppeteer.connect(puppeteerOpts);
-            page = await browser.newPage();
-        } else {
-            const browserArgs = [...(puppeteerOpts.args || [])];
-            if(!browserArgs.find(arg => arg.includes('--user-agent'))) {
-                browserArgs.push(`--user-agent=${this.options.userAgent}`);
-            }
-            // navigator.webdriver fix
-            browserArgs.push('--disable-blink-features=AutomationControlled');
+        // const puppeteerOpts = this.options.puppeteer;
+        // if (puppeteerOpts && puppeteerOpts.browserWSEndpoint) {
+        //     browser = await puppeteer.connect(puppeteerOpts);
+        //     page = await browser.newPage();
+        // } else {
+        //     const browserArgs = [...(puppeteerOpts.args || [])];
+        //     if(!browserArgs.find(arg => arg.includes('--user-agent'))) {
+        //         browserArgs.push(`--user-agent=${this.options.userAgent}`);
+        //     }
+        //     // navigator.webdriver fix
+        //     browserArgs.push('--disable-blink-features=AutomationControlled');
 
-            browser = await puppeteer.launch({...puppeteerOpts, args: browserArgs});
-            page = (await browser.pages())[0];
-        }
+        //     browser = await puppeteer.launch({...puppeteerOpts, args: browserArgs});
+        //     page = (await browser.pages())[0];
+        // }
 
         if (this.options.proxyAuthentication !== undefined) {
             await page.authenticate(this.options.proxyAuthentication);
@@ -300,7 +301,7 @@ class Client extends EventEmitter {
         await page.setUserAgent(this.options.userAgent);
         if (this.options.bypassCSP) await page.setBypassCSP(true);
 
-        this.pupBrowser = browser;
+        // this.pupBrowser = browser;
         this.pupPage = page;
 
         await this.authStrategy.afterBrowserInitialized();
@@ -779,7 +780,7 @@ class Client extends EventEmitter {
      * Closes the client
      */
     async destroy() {
-        await this.pupBrowser.close();
+        // await this.pupBrowser.close();
         await this.authStrategy.destroy();
     }
 
@@ -792,13 +793,13 @@ class Client extends EventEmitter {
                 return window.Store.AppState.logout();
             }
         });
-        await this.pupBrowser.close();
+        // await this.pupBrowser.close();
         
-        let maxDelay = 0;
-        while (this.pupBrowser.isConnected() && (maxDelay < 10)) { // waits a maximum of 1 second before calling the AuthStrategy
-            await new Promise(resolve => setTimeout(resolve, 100));
-            maxDelay++; 
-        }
+        // let maxDelay = 0;
+        // while (this.pupBrowser.isConnected() && (maxDelay < 10)) { // waits a maximum of 1 second before calling the AuthStrategy
+        //     await new Promise(resolve => setTimeout(resolve, 100));
+        //     maxDelay++; 
+        // }
         
         await this.authStrategy.logout();
     }
